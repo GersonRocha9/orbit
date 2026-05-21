@@ -8,6 +8,13 @@ import { LocalServer } from './LocalServer';
 import TrayGenerator from './TrayGenerator';
 import { MainModules } from '../modules/mainRegistry';
 
+// wdio-electron-service IPC-Bridge hook. Required by the E2E worker's
+// copyOriginalApi step; without it ElectronWorkerService.before throws and
+// every spec session dies before the first command runs.
+if (process.env.WDIO_E2E === '1') {
+  require('wdio-electron-service/main');
+}
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (process.platform === 'win32' && started) {
   app.quit();
