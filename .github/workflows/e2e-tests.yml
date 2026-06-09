@@ -51,7 +51,7 @@ jobs:
         env:
           # Pull in wdio-electron-service main/preload hooks so the E2E IPC
           # bridge is reachable. Vite tree-shakes them out without this flag.
-          WDIO_E2E: '1'
+          WDIO_E2E: "1"
 
       - name: Install E2E dependencies
         run: yarn install
@@ -118,7 +118,8 @@ jobs:
 
       - name: Install Appium mac2 driver
         working-directory: apps/menu-bar/e2e
-        run: npx appium driver install mac2
+        # Pin to the last 2.x line
+        run: npx appium driver install --source=npm appium-mac2-driver@2.2.2
 
       - name: Run macOS E2E tests
         working-directory: apps/menu-bar/e2e

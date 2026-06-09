@@ -8,13 +8,6 @@ import { LocalServer } from './LocalServer';
 import TrayGenerator from './TrayGenerator';
 import { MainModules } from '../modules/mainRegistry';
 
-// wdio-electron-service IPC-Bridge hook. Required by the E2E worker's
-// copyOriginalApi step; without it ElectronWorkerService.before throws and
-// every spec session dies before the first command runs.
-if (process.env.WDIO_E2E === '1') {
-  require('wdio-electron-service/main');
-}
-
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (process.platform === 'win32' && started) {
   app.quit();
@@ -80,4 +73,13 @@ app.on('ready', () => {
 
   const server = new LocalServer();
   server.start();
+
+  // wdio-electron-service IPC-Bridge hook. Required by the E2E worker's
+  // copyOriginalApi step. Loaded AFTER the BrowserWindow is created so the
+  // hook's `app.whenReady().then(...)` fast-copy iteration of every Electron
+  // API doesn't sit in front of window creation on the ready-event queue and
+  // starve Chromium of the time it needs to write DevToolsActivePort.
+  if (process.env.WDIO_E2E === '1') {
+    require('wdio-electron-service/main');
+  }
 });
